@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>
+    CPCB Research Dashboard
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  />
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>
+      CPCB Air Quality Research Dashboard
+    </h1>
+
+    <p class="subtitle">
+      Upload CPCB datasets for two locations
+      and compare PM2.5 and Heat Index trends.
+    </p>
+
+    <form id="uploadForm">
+
+      <div class="grid">
+
+        <!-- PLACE 1 -->
+
+        <div class="card">
+
+          <h2>
+            Place 1
+          </h2>
+
+          <label>
+            2018 CSV
+          </label>
+
+          <input
+            type="file"
+            name="place1_2018"
+            required
+          />
+
+          <label>
+            2023 CSV
+          </label>
+
+          <input
+            type="file"
+            name="place1_2023"
+            required
+          />
+        </div>
+
+        <!-- PLACE 2 -->
+
+        <div class="card">
+
+          <h2>
+            Place 2
+          </h2>
+
+          <label>
+            2018 CSV
+          </label>
+
+          <input
+            type="file"
+            name="place2_2018"
+            required
+          />
+
+          <label>
+            2023 CSV
+          </label>
+
+          <input
+            type="file"
+            name="place2_2023"
+            required
+          />
+        </div>
+      </div>
+
+      <button type="submit">
+        Run Analysis
+      </button>
+
+    </form>
+
+    <div id="output"></div>
+
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>
