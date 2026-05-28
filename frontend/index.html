@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -11,7 +12,9 @@
   />
 
   <title>
+
     CPCB Research Dashboard
+
   </title>
 
   <link
@@ -25,29 +28,168 @@
 
   <div class="container">
 
-    <h1>
-      CPCB Air Quality Research Dashboard
-    </h1>
+    <!-- ================================= -->
+    <!-- HEADER -->
+    <!-- ================================= -->
 
-    <p class="subtitle">
-      Upload CPCB datasets for two locations
-      and compare PM2.5 and Heat Index trends.
-    </p>
+    <header>
+
+      <h1>
+
+        CPCB Air Quality Research Dashboard
+
+      </h1>
+
+      <p class="subtitle">
+
+        Comparative analysis of PM2.5 and
+        Heat Index variability during
+        El Niño conditions using CPCB datasets.
+
+      </p>
+
+      <p class="research-tag">
+
+        URSI-RCRS 2024 Research Visualization Platform
+
+      </p>
+
+    </header>
+
+    <!-- ================================= -->
+    <!-- AQI SECTION -->
+    <!-- ================================= -->
+
+    <div id="aqiContainer"></div>
+
+    <!-- ================================= -->
+    <!-- RESEARCH SECTION -->
+    <!-- ================================= -->
+
+    <section class="research-header">
+
+      <h2>
+
+        Research Background
+
+      </h2>
+
+      <p>
+
+        This dashboard visualizes
+        PM2.5 and Heat Index variability
+        across Delhi and Jodhpur during
+        El Niño periods.
+
+      </p>
+
+      <p>
+
+        The research focuses on:
+        diurnal variability,
+        thermal comfort,
+        PM2.5 accumulation,
+        and stable night-time conditions.
+
+      </p>
+
+      <a
+        class="paper-link"
+        href="https://www.ursi.org/proceedings/RCRS/2024/RCRS2024_0111.pdf"
+        target="_blank"
+      >
+
+        View Research Abstract
+
+      </a>
+
+    </section>
+
+    <!-- ================================= -->
+    <!-- CPCB GUIDE -->
+    <!-- ================================= -->
+
+    <section class="guide-section">
+
+      <h2>
+
+        How To Download CPCB Data
+
+      </h2>
+
+      <ol>
+
+        <li>
+
+          Open CPCB Dashboard
+
+        </li>
+
+        <li>
+
+          Click on “Comparison Data”
+
+        </li>
+
+        <li>
+
+          Select one station at a time
+
+        </li>
+
+        <li>
+
+          Select:
+          PM2.5,
+          Temp,
+          RH,
+          AT
+
+        </li>
+
+        <li>
+
+          Download hourly data in
+          Excel (.xlsx) format
+
+        </li>
+
+      </ol>
+
+      <a
+        class="paper-link"
+        href="https://airquality.cpcb.gov.in/ccr/#/caaqm-dashboard-all/caaqm-landing"
+        target="_blank"
+      >
+
+        Open CPCB Dashboard
+
+      </a>
+
+    </section>
+
+    <!-- ================================= -->
+    <!-- FORM -->
+    <!-- ================================= -->
 
     <form id="uploadForm">
 
       <div class="grid">
 
-        <!-- PLACE 1 -->
+        <!-- DELHI -->
 
         <div class="card">
 
           <h2>
-            Place 1
+
+            Place 1 Dataset
+
           </h2>
 
           <label>
-            2018 CSV
+
+            Year 1 Dataset
+
           </label>
 
           <input
@@ -57,7 +199,9 @@
           />
 
           <label>
-            2023 CSV
+
+            Year 2 Dataset
+
           </label>
 
           <input
@@ -65,18 +209,23 @@
             name="place1_2023"
             required
           />
+
         </div>
 
-        <!-- PLACE 2 -->
+        <!-- JODHPUR -->
 
         <div class="card">
 
           <h2>
-            Place 2
+
+            Place 2 Dataset
+
           </h2>
 
           <label>
-            2018 CSV
+
+            Year 1 Dataset
+
           </label>
 
           <input
@@ -86,7 +235,9 @@
           />
 
           <label>
-            2023 CSV
+
+            Year 2 Dataset
+
           </label>
 
           <input
@@ -94,14 +245,32 @@
             name="place2_2023"
             required
           />
+
         </div>
+
       </div>
 
       <button type="submit">
-        Run Analysis
+
+        Run Research Analysis
+
+      </button>
+
+      <button
+        type="button"
+        id="sampleBtn"
+        class="sample-btn"
+      >
+
+        Run Using Sample Dataset
+
       </button>
 
     </form>
+
+    <!-- ================================= -->
+    <!-- OUTPUT -->
+    <!-- ================================= -->
 
     <div id="output"></div>
 
