@@ -1,4 +1,5 @@
 import pandas as pd
+
 from app.preprocessing.data_processor import (
     load_csv,
     preprocess_dataframe,
@@ -26,58 +27,63 @@ from app.visualization.correlation_analysis import (
 )
 
 
+# =====================================================
+# COMPUTE HEAT INDEX
+# =====================================================
+
 def compute_hi_column(
     df,
     temp_column,
-    rh_column,
-    fallback_temp_column=None
+    rh_column
 ):
 
-    # -----------------------------------
-    # CREATE WORKING TEMP COLUMN
-    # -----------------------------------
+    df = df.copy()
 
-    df["TEMP_USED"] = pd.to_numeric(
+    # -------------------------------
+    # CLEAN TEMPERATURE
+    # -------------------------------
+
+    df["Temperature"] = pd.to_numeric(
         df[temp_column],
-        errors='coerce'
+        errors="coerce"
     )
 
-    # -----------------------------------
-    # USE FALLBACK TEMP IF MAIN TEMP EMPTY
-    # -----------------------------------
-
-    if fallback_temp_column:
-
-        fallback_temp = pd.to_numeric(
-            df[fallback_temp_column],
-            errors='coerce'
-        )
-
-        df["TEMP_USED"] = (
-            df["TEMP_USED"]
-            .fillna(fallback_temp)
-        )
-
-    # -----------------------------------
+    # -------------------------------
     # CLEAN RH
-    # -----------------------------------
+    # -------------------------------
+    print("\n========== RAW RH VALUES ==========\n")
 
-    df[rh_column] = pd.to_numeric(
+    print(
+    df[rh_column]
+    .head(30)
+)
+
+    print("\n===================================\n")
+    df["RH"] = pd.to_numeric(
         df[rh_column],
-        errors='coerce'
+        errors="coerce"
     )
 
-    # -----------------------------------
+    print("\n========== CLEAN RH VALUES ==========\n")
+
+    print(
+    df["RH"]
+    .head(30)
+)
+
+    print("\n=====================================\n")
+
+    # -------------------------------
     # COMPUTE HI
-    # -----------------------------------
+    # -------------------------------
 
     hi_values = []
 
     for _, row in df.iterrows():
 
-        temp = row["TEMP_USED"]
+        temp = row["Temperature"]
 
-        rh = row[rh_column]
+        rh = row["RH"]
 
         if pd.isna(temp) or pd.isna(rh):
 
@@ -102,11 +108,15 @@ def compute_hi_column(
 
     df["HI"] = pd.to_numeric(
         df["HI"],
-        errors='coerce'
+        errors="coerce"
     )
 
     return df
 
+
+# =====================================================
+# MAIN ANALYSIS
+# =====================================================
 
 def run_full_analysis(
 
@@ -120,9 +130,9 @@ def run_full_analysis(
 
 ):
 
-    # ----------------------------------------
+    # =================================================
     # LOAD FILES
-    # ----------------------------------------
+    # =================================================
 
     pm_2018 = load_csv(pm_2018_path)
 
@@ -132,9 +142,9 @@ def run_full_analysis(
 
     climate_2023 = load_csv(climate_2023_path)
 
-    # ----------------------------------------
+    # =================================================
     # DETECT COLUMNS
-    # ----------------------------------------
+    # =================================================
 
     detected_pm_2018 = detect_required_columns(
         pm_2018
@@ -152,24 +162,28 @@ def run_full_analysis(
         climate_2023
     )
 
-    # ----------------------------------------
-    # EXTRACT DETECTED COLUMNS
-    # ----------------------------------------
+    # =================================================
+    # PM COLUMNS
+    # =================================================
 
-    date_column_2018 = (
-        detected_pm_2018["date"]
+    pm_date_2018 = detected_pm_2018["date"]
+
+    pm_date_2023 = detected_pm_2023["date"]
+
+    pm_column_2018 = detected_pm_2018["pm25"]
+
+    pm_column_2023 = detected_pm_2023["pm25"]
+
+    # =================================================
+    # CLIMATE COLUMNS
+    # =================================================
+
+    climate_date_2018 = (
+        detected_climate_2018["date"]
     )
 
-    date_column_2023 = (
-        detected_pm_2023["date"]
-    )
-
-    pm_column_2018 = (
-        detected_pm_2018["pm25"]
-    )
-
-    pm_column_2023 = (
-        detected_pm_2023["pm25"]
+    climate_date_2023 = (
+        detected_climate_2023["date"]
     )
 
     temp_column_2018 = (
@@ -188,17 +202,40 @@ def run_full_analysis(
         detected_climate_2023["humidity"]
     )
 
-    # ----------------------------------------
+    # =================================================
+    # DEBUG DETECTED COLUMNS
+    # =================================================
+
+    print("\n========== DETECTED COLUMNS ==========\n")
+
+    print("PM 2018:", detected_pm_2018)
+
+    print("PM 2023:", detected_pm_2023)
+
+    print("Climate 2018:", detected_climate_2018)
+
+    print("Climate 2023:", detected_climate_2023)
+
+    print("\n======================================\n")
+
+    # =================================================
     # VALIDATION
-    # ----------------------------------------
+    # =================================================
 
     required_columns = [
-        date_column_2018,
-        date_column_2023,
+
+        pm_date_2018,
+        pm_date_2023,
+
         pm_column_2018,
         pm_column_2023,
+
+        climate_date_2018,
+        climate_date_2023,
+
         temp_column_2018,
         temp_column_2023,
+
         rh_column_2018,
         rh_column_2023
     ]
@@ -209,196 +246,185 @@ def run_full_analysis(
             "Required CPCB columns not detected"
         )
 
-    # ----------------------------------------
-    # PREPROCESS PM FILES
-    # ----------------------------------------
+    # =================================================
+    # PREPROCESS PM
+    # =================================================
 
     pm_2018 = preprocess_dataframe(
         pm_2018,
-        date_column_2018,
+        pm_date_2018,
         pm_column_2018
     )
 
     pm_2023 = preprocess_dataframe(
         pm_2023,
-        date_column_2023,
+        pm_date_2023,
         pm_column_2023
     )
 
-    # ----------------------------------------
-    # PREPROCESS CLIMATE FILES
-    # ----------------------------------------
+    # =================================================
+    # PREPROCESS CLIMATE
+    # =================================================
 
     climate_2018 = preprocess_dataframe(
         climate_2018,
-        date_column_2018,
+        climate_date_2018,
         temp_column_2018
     )
 
     climate_2023 = preprocess_dataframe(
         climate_2023,
-        date_column_2023,
+        climate_date_2023,
         temp_column_2023
     )
 
-    # ----------------------------------------
-    # CLEAN RH
-    # ----------------------------------------
+    # =================================================
+    # STANDARDIZE DATE COLUMNS
+    # =================================================
 
-    climate_2018[rh_column_2018] = (
-        climate_2018[rh_column_2018]
-        .astype(float)
+    pm_2018.rename(
+        columns={
+            pm_date_2018: "From Date"
+        },
+        inplace=True
     )
 
-    climate_2023[rh_column_2023] = (
-        climate_2023[rh_column_2023]
-        .astype(float)
+    pm_2023.rename(
+        columns={
+            pm_date_2023: "From Date"
+        },
+        inplace=True
     )
 
-    # ----------------------------------------
+    climate_2018.rename(
+        columns={
+            climate_date_2018: "From Date"
+        },
+        inplace=True
+    )
+
+    climate_2023.rename(
+        columns={
+            climate_date_2023: "From Date"
+        },
+        inplace=True
+    )
+
+    # =================================================
     # COMPUTE HI
-    # ----------------------------------------
-
-    fallback_temp_2018 = (
-    detected_climate_2018["temp_fallback"]
-)
+    # =================================================
 
     hi_2018 = compute_hi_column(
-    climate_2018,
-    temp_column_2018,
-    rh_column_2018,
-    fallback_temp_2018
-)
-
-    fallback_temp_2023 = (
-    detected_climate_2023["temp_fallback"]
-)
+        climate_2018,
+        temp_column_2018,
+        rh_column_2018
+    )
 
     hi_2023 = compute_hi_column(
-    climate_2023,
-    temp_column_2023,
-    rh_column_2023,
-    fallback_temp_2023
-)
+        climate_2023,
+        temp_column_2023,
+        rh_column_2023
+    )
 
-    # ----------------------------------------
-# SAVE PROCESSED FILES
-# ----------------------------------------
+    # =================================================
+    # DEBUG WEATHER DATA
+    # =================================================
+
+    print("\n========== WEATHER DEBUG ==========\n")
+
+    print(
+        hi_2018[
+            [
+                "From Date",
+                "Temperature",
+                "RH",
+                "HI"
+            ]
+        ].head(20)
+    )
+
+    print(
+        hi_2023[
+            [
+                "From Date",
+                "Temperature",
+                "RH",
+                "HI"
+            ]
+        ].head(20)
+    )
+
+    print("\n===================================\n")
+
+    # =================================================
+    # SAVE PROCESSED FILES
+    # =================================================
 
     hi_2018.to_csv(
-    f"outputs/processed_{location}_2018.csv",
-    index=False
-)
+        f"outputs/processed_{location}_2018.csv",
+        index=False
+    )
 
     hi_2023.to_csv(
-    f"outputs/processed_{location}_2023.csv",
-    index=False
-)
+        f"outputs/processed_{location}_2023.csv",
+        index=False
+    )
 
-    print("\n========== RAW WEATHER DATA ==========\n")
+    # =================================================
+    # STANDARDIZE PM COLUMN
+    # =================================================
 
-    print(
-    climate_2018[
-        [temp_column_2018, rh_column_2018]
-    ].head(20)
-)
+    pm_2018.rename(
+        columns={
+            pm_column_2018: "PM2.5"
+        },
+        inplace=True
+    )
 
-    print(
-    climate_2023[
-        [temp_column_2023, rh_column_2023]
-    ].head(20)
-)
+    pm_2023.rename(
+        columns={
+            pm_column_2023: "PM2.5"
+        },
+        inplace=True
+    )
 
-    print("\n======================================\n")
-    print("\n========== HI DEBUG ==========\n")
-    
-
-    print("HI 2018 rows:")
-    print(len(hi_2018))
-
-    print("\nHI 2023 rows:")
-    print(len(hi_2023))
-
-    print("\nHI 2018 sample:")
-    print(
-    hi_2018[
-        [temp_column_2018, rh_column_2018, "HI"]
-    ].head()
-)
-
-    print("\nHI 2023 sample:")
-    print(
-    hi_2023[
-        [temp_column_2023, rh_column_2023, "HI"]
-    ].head()
-)
-
-    print("\nHI 2018 stats:")
-    print(
-    hi_2018["HI"].describe()
-)
-
-    print("\nHI 2023 stats:")
-    print(
-    hi_2023["HI"].describe()
-)
-
-    print("\n==============================\n")
-    # ----------------------------------------
-    # PM2.5 HISTOGRAMS
-    # ----------------------------------------
+    # =================================================
+    # PM HISTOGRAMS
+    # =================================================
 
     pm25_plot = generate_pm25_histograms(
 
-    df_2018=pm_2018,
+        df_2018=pm_2018,
 
-    df_2023=pm_2023,
+        df_2023=pm_2023,
 
-    date_column=date_column_2018,
+        date_column="From Date",
 
-    pm_column=pm_column_2018,
+        pm_column="PM2.5",
 
-    location=location
-)
+        location=location
+    )
 
-    # ----------------------------------------
+    # =================================================
     # HI HISTOGRAMS
-    # ----------------------------------------
+    # =================================================
 
-    hi_plot = hi_plot = generate_hi_histograms(
+    hi_plot = generate_hi_histograms(
 
-    df_2018=hi_2018,
+        df_2018=hi_2018,
 
-    df_2023=hi_2023,
+        df_2023=hi_2023,
 
-    date_column=date_column_2018,
+        date_column="From Date",
 
-    location=location
-)
+        location=location
+    )
 
-    # ----------------------------------------
-    # DOUBLE DIURNAL CURVES
-    # ----------------------------------------
+    # =================================================
+    # DOUBLE DIURNAL
+    # =================================================
 
-    # Rename PM columns for diurnal curves
-
-    pm_2018.rename(
-    columns={
-        pm_column_2018: "PM2.5"
-    },
-    inplace=True
-)
-
-    pm_2023.rename(
-    columns={
-        pm_column_2023: "PM2.5"
-    },
-    inplace=True
-)
-
-    
-    diurnal_plot = (
-    generate_double_diurnal_curves(
+    diurnal_plot = generate_double_diurnal_curves(
 
         hi_2018=hi_2018,
 
@@ -408,70 +434,103 @@ def run_full_analysis(
 
         pm_2023=pm_2023,
 
-        date_column=date_column_2018,
+        date_column="From Date",
 
         pm_column="PM2.5",
 
         location=location
     )
+    # ==========================================
+# FORCE DATETIME BEFORE MERGE
+# ==========================================
+
+    pm_2018["From Date"] = pd.to_datetime(
+
+    pm_2018["From Date"],
+
+    errors="coerce"
 )
 
+    pm_2023["From Date"] = pd.to_datetime(
 
-    # ----------------------------------------
-    # PREPARE CORRELATION DATA
-    # ----------------------------------------
+    pm_2023["From Date"],
+
+    errors="coerce"
+)
+
+    hi_2018["From Date"] = pd.to_datetime(
+
+    hi_2018["From Date"],
+
+    errors="coerce"
+)
+
+    hi_2023["From Date"] = pd.to_datetime(
+
+    hi_2023["From Date"],
+
+    errors="coerce"
+)
+
+# ==========================================
+# DEBUG TYPES
+# ==========================================
+
+    print("\n========== MERGE DTYPES ==========\n")
+
+    print(
+    pm_2018["From Date"].dtype
+)
+
+    print(
+    hi_2018["From Date"].dtype
+)
+
+    print(
+    pm_2023["From Date"].dtype
+)
+
+    print(
+    hi_2023["From Date"].dtype
+)
+
+    print("\n==================================\n")
+
+    # =================================================
+    # CORRELATION DATA
+    # =================================================
 
     corr_2018 = pm_2018.merge(
 
-        hi_2018[
-            [date_column_2018, "HI"]
-        ],
+    hi_2018[
+        [
+            "From Date",
+            "HI"
+        ]
+    ],
 
-        on=date_column_2018
-    )
+    on="From Date",
+
+    how="inner"
+)
 
     corr_2023 = pm_2023.merge(
 
-        hi_2023[
-            [date_column_2023, "HI"]
-        ],
+    hi_2023[
+        [
+            "From Date",
+            "HI"
+        ]
+    ],
 
-        on=date_column_2023
-    )
+    on="From Date",
 
-    # Rename PM columns
-    corr_2018.rename(
-        columns={
-            pm_column_2018: "PM2.5"
-        },
-        inplace=True
-    )
+    how="inner"
+)
 
-    corr_2023.rename(
-        columns={
-            pm_column_2023: "PM2.5"
-        },
-        inplace=True
-    )
-
-    # Rename date columns
-    corr_2018.rename(
-        columns={
-            date_column_2018: "From Date"
-        },
-        inplace=True
-    )
-
-    corr_2023.rename(
-        columns={
-            date_column_2023: "From Date"
-        },
-        inplace=True
-    )
-
-    # ----------------------------------------
-    # CORRELATION ANALYSIS
-    # ----------------------------------------
+    # =================================================
+    # CORRELATION PLOT
+    # =================================================
 
     correlation_plot = (
         generate_correlation_analysis(
@@ -481,9 +540,9 @@ def run_full_analysis(
         )
     )
 
-    # ----------------------------------------
-    # RETURN RESULTS
-    # ----------------------------------------
+    # =================================================
+    # RETURN
+    # =================================================
 
     return {
 

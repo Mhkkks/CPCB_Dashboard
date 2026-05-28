@@ -9,18 +9,77 @@ def load_and_process_csv(
     value_column
 ):
 
+    import pandas as pd
+
+    # =========================
+    # SAFE COPY
+    # =========================
+
+    df = df.copy()
+
+    # =========================
+    # FORCE DATETIME
+    # =========================
+
+    df[date_column] = pd.to_datetime(
+
+        df[date_column],
+
+        errors='coerce'
+    )
+
+    # =========================
+    # FORCE NUMERIC
+    # =========================
+
+    df[value_column] = pd.to_numeric(
+
+        df[value_column],
+
+        errors='coerce'
+    )
+
+    # =========================
+    # REMOVE BAD ROWS
+    # =========================
+
+    df = df.dropna(
+
+        subset=[
+            date_column,
+            value_column
+        ]
+    )
+
+    # =========================
+    # EXTRACT HOUR
+    # =========================
+
     df['Hour'] = (
+
         df[date_column]
         .dt.hour
     )
 
+    # =========================
+    # GROUP BY HOUR
+    # =========================
+
     hourly_mean = (
-        df[df[value_column] != 0]
+
+        df[
+            df[value_column] != 0
+        ]
+
         .groupby('Hour')[value_column]
+
         .agg(['mean', 'std'])
     )
 
-    return hourly_mean.sort_index()
+    return (
+        hourly_mean
+        .sort_index()
+    )
 
 
 def generate_double_diurnal_curves(

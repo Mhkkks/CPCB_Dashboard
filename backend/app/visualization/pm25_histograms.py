@@ -44,24 +44,81 @@ def filter_time_intervals(
     date_column
 ):
 
+    import pandas as pd
+
+    from datetime import time
+
+    # =========================
+    # ENSURE DATETIME
+    # =========================
+
+    df = df.copy()
+
+    df[date_column] = pd.to_datetime(
+
+        df[date_column],
+
+        errors='coerce'
+    )
+
+    df = df.dropna(
+        subset=[date_column]
+    )
+
+    # =========================
+    # TIME INTERVALS
+    # =========================
+
+    morning_start = time(6, 0)
+    morning_end = time(12, 0)
+
+    afternoon_start = time(12, 0)
+    afternoon_end = time(18, 0)
+
+    night_start = time(18, 0)
+    night_end = time(23, 59)
+
+    midnight_start = time(0, 0)
+    midnight_end = time(6, 0)
+
     morning_data = df[
-        (df[date_column].dt.time >= morning_start)
+        (
+            df[date_column].dt.time >= morning_start
+        )
         &
-        (df[date_column].dt.time < afternoon_start)
+        (
+            df[date_column].dt.time < morning_end
+        )
     ]
 
     afternoon_data = df[
-        (df[date_column].dt.time >= afternoon_start)
+        (
+            df[date_column].dt.time >= afternoon_start
+        )
         &
-        (df[date_column].dt.time < night_start)
+        (
+            df[date_column].dt.time < afternoon_end
+        )
     ]
 
     night_data = df[
-        (df[date_column].dt.time >= night_start)
+        (
+            df[date_column].dt.time >= night_start
+        )
+        &
+        (
+            df[date_column].dt.time <= night_end
+        )
     ]
 
     midnight_data = df[
-        (df[date_column].dt.time < morning_start)
+        (
+            df[date_column].dt.time >= midnight_start
+        )
+        &
+        (
+            df[date_column].dt.time < midnight_end
+        )
     ]
 
     return (

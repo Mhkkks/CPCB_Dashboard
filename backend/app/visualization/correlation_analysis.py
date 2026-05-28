@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import pandas as pd
 
 from sklearn.linear_model import (
     LinearRegression
@@ -68,15 +69,33 @@ def generate_correlation_analysis(
 
         loc_data_2018 = (
             data_2018_intervals[i]
+            .copy()
         )
 
         loc_data_2023 = (
             data_2023_intervals[i]
+            .copy()
         )
 
-        # -----------------------------------
-        # SCATTER PLOTS
-        # -----------------------------------
+        loc_data_2018 = loc_data_2018.dropna(
+            subset=['HI', 'PM2.5']
+        )
+
+        loc_data_2023 = loc_data_2023.dropna(
+            subset=['HI', 'PM2.5']
+        )
+
+        if len(loc_data_2018) == 0 and len(loc_data_2023) == 0:
+
+            ax.set_title(
+                f'{location} - {interval} (No Data)'
+            )
+
+            continue
+
+        # -------------------------
+        # Scatter plots
+        # -------------------------
 
         if not loc_data_2018.empty:
 
@@ -102,9 +121,9 @@ def generate_correlation_analysis(
                 label='2023'
             )
 
-        # -----------------------------------
-        # 2018 REGRESSION
-        # -----------------------------------
+        # -------------------------
+        # Regression 2018
+        # -------------------------
 
         if len(loc_data_2018) > 1:
 
@@ -142,9 +161,9 @@ def generate_correlation_analysis(
                 color='blue'
             )
 
-        # -----------------------------------
-        # 2023 REGRESSION
-        # -----------------------------------
+        # -------------------------
+        # Regression 2023
+        # -------------------------
 
         if len(loc_data_2023) > 1:
 
@@ -181,10 +200,6 @@ def generate_correlation_analysis(
                 y_pred_2023,
                 color='red'
             )
-
-        # -----------------------------------
-        # STYLING
-        # -----------------------------------
 
         ax.set_title(
             f'{location} - {interval}'
@@ -226,6 +241,6 @@ def generate_correlation_analysis(
     plt.close()
 
     return (
+        f"http://127.0.0.1:8000/outputs/plots/{plot_path.name}"
+    )
 
-    f"http://127.0.0.1:8000/outputs/plots/{plot_path.name}"
-)
