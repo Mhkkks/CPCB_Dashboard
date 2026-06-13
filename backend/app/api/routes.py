@@ -4,6 +4,7 @@ from fastapi import (
     File
 )
 
+
 import shutil
 
 from app.config import UPLOAD_DIR
@@ -86,7 +87,11 @@ async def run_analysis(
         climate_2023_path=saved_paths["place2_2023"],
 
         location="Place_2"
+
     )
+
+    print(place1_results)
+    print(place2_results)
 
     return {
 
