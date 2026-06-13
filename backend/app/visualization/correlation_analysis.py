@@ -244,6 +244,6 @@ def generate_correlation_analysis(
     plt.close()
 
     return (
-        f"OUTPUT_DIR/outputs/plots/{plot_path.name}"
+        f"/outputs/plots/{plot_path.name}"
     )
 
