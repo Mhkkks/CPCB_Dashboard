@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Path
+from fastapi import FastAPI
+from pathlib import Path
 
 from fastapi.middleware.cors import (
     CORSMiddleware
