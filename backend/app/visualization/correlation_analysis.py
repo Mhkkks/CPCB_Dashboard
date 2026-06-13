@@ -6,13 +6,16 @@ import pandas as pd
 from sklearn.linear_model import (
     LinearRegression
 )
+from app.config import (
+    UPLOAD_DIR,
+    OUTPUT_DIR,
+    PLOTS_DIR,
+    EXCEL_DIR
+)
 
 from app.visualization.pm25_histograms import (
     filter_time_intervals
 )
-
-from app.config import PLOTS_DIR
-
 
 def generate_correlation_analysis(
     data_2018,
@@ -241,6 +244,6 @@ def generate_correlation_analysis(
     plt.close()
 
     return (
-        f"http://127.0.0.1:8000/outputs/plots/{plot_path.name}"
+        f"OUTPUT_DIR/outputs/plots/{plot_path.name}"
     )
 

@@ -229,5 +229,5 @@ def generate_double_diurnal_curves(
 
     return (
 
-    f"http://127.0.0.1:8000/outputs/plots/{plot_path.name}"
+    f"/outputs/plots/{plot_path.name}"
 )

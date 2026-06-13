@@ -380,8 +380,8 @@ def generate_hi_histograms(
     return {
 
     "plot_url":
-    f"http://127.0.0.1:8000/outputs/plots/{plot_path.name}",
+    f"/outputs/plots/{plot_path.name}",
 
     "excel_url":
-    f"http://127.0.0.1:8000/outputs/excel/{excel_path.name}"
+    f"/outputs/excel/{excel_path.name}"
 }

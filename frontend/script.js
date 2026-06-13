@@ -195,7 +195,7 @@ form.addEventListener(
       const response =
         await fetch(
 
-          "https://atmosviz.onrender.com/run-analysis",
+          `${CONFIG.API_BASE_URL}/run-analysis`,
 
           {
             method: "POST",
@@ -294,7 +294,7 @@ sampleBtn.addEventListener(
       const response =
         await fetch(
 
-          "https://atmosviz.onrender.com/run-analysis",
+          `${CONFIG.API_BASE_URL}/run-analysis`,
 
           {
             method: "POST",
