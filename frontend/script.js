@@ -195,7 +195,7 @@ form.addEventListener(
       const response =
         await fetch(
 
-          "http://127.0.0.1:8000/run-analysis",
+          "https://atmosviz.onrender.com/",
 
           {
             method: "POST",
