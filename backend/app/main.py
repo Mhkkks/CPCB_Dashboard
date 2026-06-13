@@ -30,20 +30,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# -----------------------------------
-# ROUTES
-# -----------------------------------
-
 app.include_router(router)
 
-# -----------------------------------
-# STATIC FILES
-# -----------------------------------
+from app.config import OUTPUT_DIR
+
+app.mount(
+    "/outputs",
+    StaticFiles(directory=str(OUTPUT_DIR)),
+    name="outputs"
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 app.mount(
     "/",
-    StaticFiles(directory=str(BASE_DIR / "frontend"), html=True),
+    StaticFiles(
+        directory=str(BASE_DIR / "frontend"),
+        html=True
+    ),
     name="frontend"
- )
+)
