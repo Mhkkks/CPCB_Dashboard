@@ -9,6 +9,9 @@ OUTPUT_DIR = BASE_DIR / "outputs"
 PLOTS_DIR = OUTPUT_DIR / "plots"
 
 EXCEL_DIR = OUTPUT_DIR / "excel"
+print("BASE_DIR =", BASE_DIR)
+print("PLOTS_DIR =", PLOTS_DIR)
+print("EXCEL_DIR =", EXCEL_DIR)
 
 for folder in [
     UPLOAD_DIR,

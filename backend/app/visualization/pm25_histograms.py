@@ -266,6 +266,7 @@ def generate_pm25_histograms(
     plt.figure(
         figsize=(14, 12)
     )
+    
 
     plt.suptitle(
 
@@ -404,6 +405,8 @@ def generate_pm25_histograms(
 
         bbox_inches='tight'
     )
+    print("Saved:", plot_path)
+    print("Exists:", plot_path.exists())
 
     plt.close()
 
